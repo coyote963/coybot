@@ -72,3 +72,11 @@ premium = [
     "Free-To-Play",
     "Premium Player"
 ]
+
+steam_status = ["Offline",
+"Online",
+"Busy",
+"Away",
+"Snooze",
+"looking to trade",
+"looking to play"]
