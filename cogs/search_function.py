@@ -27,3 +27,9 @@ def get_steam_profile(player):
         steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}".format(steam_key,player['_id']['profile'])
         response = requests.get(steam_url)
         return response.json()
+
+
+def get_profile(collection, player):
+    return collection.find_one(
+        {'player' : player['_id']}
+    )
