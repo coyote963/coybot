@@ -18,18 +18,21 @@ class Ratings(commands.Cog):
 
     @commands.command()
     async def ctf(self, ctx, sort: str = ""):
+        """Check the CTF Leaderboards"""
         await ctx.send('CTF leaderboard')
         rankings = ctf_rankings(self.db)
         await ctx.send('{}'.format(rankings))
 
     @commands.command()
     async def tdm(self, ctx, sort: str = ""):
+        """Check the TDM leaderboards"""
         await ctx.send('TDM leaderboard {}'.format(sort))
         rankings = tdm_rankings(self.db)
         await ctx.send('{}'.format(rankings))
 
     @commands.command()
     async def dm(self, ctx, sort: str = ""):
+        """Check the DM leaderboards"""
         await ctx.send('DM leaderboard {}'.format(sort))
         rankings = dm_rankings(self.db)
         await ctx.send('{}'.format(rankings))

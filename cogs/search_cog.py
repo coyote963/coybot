@@ -17,6 +17,7 @@ class Search(commands.Cog):
 
     @commands.command()
     async def profile(self, ctx, query: str = ""):
+        """Sends the profile of the username provided"""
         if len(query) != 0:
             player = get_player(self.db, query)
             if player is None:
