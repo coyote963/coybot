@@ -51,7 +51,10 @@ class Search(commands.Cog):
                 embed.add_field(name="Hat", value=hats[int(player['hat'])])
                 embed.add_field(name="Platform", value = store[int(player['_id']['platform'])])
                 embed.add_field(name="Color", value = get_color_name(*get_hex(int(player['color']))))
-
+                has_dm = ":x:" if get_profile(self.db.dm_profiles, player) is None else ":o:"
+                has_tdm = ":x:" if get_profile(self.db.tdm_profiles, player) is None else ":o:"
+                has_ctf = ":x:" if get_profile(self.db.ctf_profiles, player) is None else ":o:"
+                embed.set_footer(text = "dm {} | tdm {} | ctf {}".format(has_dm, has_tdm, has_ctf))
                 await ctx.send(embed = embed)
         else:
             await ctx.send("Provide a username")
