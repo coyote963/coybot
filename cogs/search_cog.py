@@ -7,6 +7,7 @@ from pymongo import MongoClient
 from cogs.game_ids import hats, premium, store, steam_status
 import discord
 import asyncio
+import emoji
 
 class Search(commands.Cog):
     """This part of the bot is for returning search"""
@@ -16,8 +17,10 @@ class Search(commands.Cog):
         self.db = MongoClient(uri).bmdb
 
     @commands.command()
-    async def profile(self, ctx, query: str = ""):
+    async def profile(self, ctx, *args):
+        
         """Sends the profile of the username provided"""
+        query = " ".join(args)
         if len(query) != 0:
             player = get_player(self.db, query)
             if player is None:
@@ -51,9 +54,11 @@ class Search(commands.Cog):
                 embed.add_field(name="Hat", value=hats[int(player['hat'])])
                 embed.add_field(name="Platform", value = store[int(player['_id']['platform'])])
                 embed.add_field(name="Color", value = get_color_name(*get_hex(int(player['color']))))
-                has_dm = ":x:" if get_profile(self.db.dm_profiles, player) is None else ":o:"
-                has_tdm = ":x:" if get_profile(self.db.tdm_profiles, player) is None else ":o:"
-                has_ctf = ":x:" if get_profile(self.db.ctf_profiles, player) is None else ":o:"
+                x = emoji.emojize(':thumbs_down:')
+                o = emoji.emojize(':thumbs_up:')
+                has_dm = x if get_profile(self.db.dm_profiles, player) is None else o
+                has_tdm = x if get_profile(self.db.tdm_profiles, player) is None else o
+                has_ctf = x if get_profile(self.db.ctf_profiles, player) is None else o
                 embed.set_footer(text = "dm {} | tdm {} | ctf {}".format(has_dm, has_tdm, has_ctf))
                 await ctx.send(embed = embed)
         else:
