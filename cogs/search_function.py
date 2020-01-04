@@ -13,7 +13,8 @@ def get_hex_code(color_tuple):
 
 def get_color_name(r,g,b):
     response = requests.get("https://www.thecolorapi.com/id?rgb=rgb({},{},{})".format(r, g, b))
-    print ("{} {} {}".format(r,g,b))
+    if (r, g, b) == (255, 0, 255):
+        return "M a g en t a"
     return response.json()['name']['value']
 
 def get_player(db, query):
