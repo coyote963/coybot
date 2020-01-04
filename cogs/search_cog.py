@@ -16,53 +16,7 @@ class Search(commands.Cog):
         self.bot = bot
         self.db = MongoClient(uri).bmdb
 
-    @commands.command()
-    async def profile(self, ctx, *args):
-        
-        """Sends the profile of the username provided"""
-        query = " ".join(args)
-        if len(query) != 0:
-            player = get_player(self.db, query)
-            if player is None:
-                await ctx.send("Please check your spelling")
-            else:
-                alternate_names = ""
-                for i in range(1, len(player['name'])):
-                    alternate_names + player['name'][i]
-                if alternate_names == "":
-                    alternate_names = "None"
-                platform = int(player['_id']['platform'])
-                if platform == 0:
-                    embed = discord.Embed(
-                        title = player['name'][0],
-                        description = "aliases : " + alternate_names,
-                        colour = get_hex_code(get_hex(int(player['color']))),
-                        url = "https://steamcommunity.com/profiles/{}".format(player['_id']['profile'])
-                    )
-                else:
-                    embed = discord.Embed(
-                        title = player['name'][0],
-                        description = "aliases : " + alternate_names,
-                        colour = get_hex_code(get_hex(int(player['color']))),
-                    )
-                if platform == 0:
-                    profile = get_steam_profile(player)
-                    embed.set_image(url =  profile['response']['players'][0]['avatarfull'])
-                    embed.add_field(name = "Steam Status", value = steam_status[int(profile['response']['players'][0]['personastate'])], inline=False)
-                if 'premium' in player:
-                    embed.add_field(name="Account", value = premium[int(player['premium'])])
-                embed.add_field(name="Hat", value=hats[int(player['hat'])])
-                embed.add_field(name="Platform", value = store[int(player['_id']['platform'])])
-                embed.add_field(name="Color", value = get_color_name(*get_hex(int(player['color']))))
-                x = emoji.emojize(':thumbs_down:')
-                o = emoji.emojize(':thumbs_up:')
-                has_dm = x if get_profile(self.db.dm_profiles, player) is None else o
-                has_tdm = x if get_profile(self.db.tdm_profiles, player) is None else o
-                has_ctf = x if get_profile(self.db.ctf_profiles, player) is None else o
-                embed.set_footer(text = "dm {} | tdm {} | ctf {}".format(has_dm, has_tdm, has_ctf))
-                await ctx.send(embed = embed)
-        else:
-            await ctx.send("Provide a username")
+
 
     @commands.command()
     async def getdm(self, ctx, query: str = ""):
@@ -156,7 +110,6 @@ class Search(commands.Cog):
                 else:
                     await ctx.send("There is no data or rating information for this person. Check back later")
 
-    
     @commands.command()
     async def gettdm(self, ctx, query: str = ""):
         """Sends information about searched tdm rating"""
@@ -202,6 +155,72 @@ class Search(commands.Cog):
                     await ctx.send(embed = embed)
                 else:
                     await ctx.send("There is no data or rating information for this person. Check back later")
+
+    @commands.command()
+    async def profile(self, ctx, *args):
+        """Sends the profile of the username provided"""
+        query = " ".join(args)
+        if len(query) != 0:
+            player = get_player(self.db, query)
+            if player is None:
+                await ctx.send("Please check your spelling")
+            else:
+                alternate_names = ""
+                for i in range(1, len(player['name'])):
+                    alternate_names + player['name'][i]
+                if alternate_names == "":
+                    alternate_names = "None"
+                platform = int(player['_id']['platform'])
+                if platform == 0:
+                    embed = discord.Embed(
+                        title = player['name'][0],
+                        description = "aliases : " + alternate_names,
+                        colour = get_hex_code(get_hex(int(player['color']))),
+                        url = "https://steamcommunity.com/profiles/{}".format(player['_id']['profile'])
+                    )
+                else:
+                    embed = discord.Embed(
+                        title = player['name'][0],
+                        description = "aliases : " + alternate_names,
+                        colour = get_hex_code(get_hex(int(player['color']))),
+                    )
+                if platform == 0:
+                    profile = get_steam_profile(player)
+                    embed.set_image(url =  profile['response']['players'][0]['avatarfull'])
+                    embed.add_field(name = "Steam Status", value = steam_status[int(profile['response']['players'][0]['personastate'])], inline=False)
+                if 'premium' in player:
+                    embed.add_field(name="Account", value = premium[int(player['premium'])])
+                embed.add_field(name="Hat", value=hats[int(player['hat'])])
+                embed.add_field(name="Platform", value = store[int(player['_id']['platform'])])
+                embed.add_field(name="Color", value = get_color_name(*get_hex(int(player['color']))))
+                tdm = emoji.emojize(':crossed_swords:')
+                dm = emoji.emojize(':skull:')
+                ctf = emoji.emojize(':crossed_flags:')
+                has_dm = get_profile(self.db.dm_profiles, player) is not None
+                has_tdm = get_profile(self.db.tdm_profiles, player) is not None
+                has_ctf = get_profile(self.db.ctf_profiles, player) is not None
+                embed.set_footer(text = "Click dm: Skull | tdm: swords | ctf: flags")
+                msg = await ctx.send(embed = embed)
+                def check(reaction, user):
+                    return user == ctx.author and reaction.emoji in [tdm, dm, ctf]
+                gamemode_reactions = [
+                    {'emoji' : tdm, 'exists' : has_tdm },
+                    {'emoji' : dm, 'exists' : has_dm },
+                    {'emoji' : ctf, 'exists' : has_ctf }
+                ]
+                for reaction in gamemode_reactions:
+                    if reaction['exists']:
+                        await msg.add_reaction(reaction['emoji'])
+
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+                except asyncio.TimeoutError:
+                    pass
+                else:
+                    cmd = self.bot.get_command("getdm")
+                    await ctx.invoke(cmd, query = query)
+        else:
+            await ctx.send("Provide a username")
 
 def setup(bot):
     bot.add_cog(Search(bot))
