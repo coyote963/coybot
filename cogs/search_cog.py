@@ -217,8 +217,17 @@ class Search(commands.Cog):
                 except asyncio.TimeoutError:
                     pass
                 else:
-                    cmd = self.bot.get_command("getdm")
-                    await ctx.invoke(cmd, query = query)
+                    command_name = ""
+                    if reaction.emoji == tdm:
+                        command_name = "gettdm"
+                    if reaction.emoji == ctf:
+                        command_name = "getctf"
+                    if reaction.emoji == dm:
+                        command_name = "getdm"
+                    if command_name != "":
+                        cmd = self.bot.get_command(command_name)
+                        await ctx.invoke(cmd , query = query)
+
         else:
             await ctx.send("Provide a username")
 
