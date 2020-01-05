@@ -54,7 +54,7 @@ class Search(commands.Cog):
                     embed.add_field(name="Mu", value="{}".format(round(float(profile['mu']), 2)))
                     embed.add_field(name="Sigma", value="{}".format(round(float(profile['sigma']), 2)))
                     embed.add_field(name="Rating", value="{}".format(round(float(profile['mu']) - 3 * float(profile['sigma']), 2)))
-                    embed.add_field(name="Last Updated", value="{} UTC".format(profile['last_updated']))
+                    embed.add_field(name="Last Updated", value="{} utc".format(profile['last_updated'].strftime("%m/%d/%Y, %H:%M")))
                     
                     if platform == 0:
                         profile = get_steam_profile(player)
@@ -100,7 +100,7 @@ class Search(commands.Cog):
                     embed.add_field(name="Mu", value="{}".format(round(float(profile['mu']), 2)))
                     embed.add_field(name="Sigma", value="{}".format(round(float(profile['sigma']), 2)))
                     embed.add_field(name="Rating", value="{}".format(round(float(profile['mu']) - 3 * float(profile['sigma']), 2)))
-                    embed.add_field(name="Last Updated", value="{} UTC".format(profile['last_updated']))
+                    embed.add_field(name="Last Updated", value="{} utc".format(profile['last_updated'].strftime("%m/%d/%Y, %H:%M")))
                     if platform == 0:
                         profile = get_steam_profile(player)
                         embed.set_image(url =  profile['response']['players'][0]['avatarfull'])
@@ -146,7 +146,7 @@ class Search(commands.Cog):
                     embed.add_field(name="Mu", value="{}".format(round(float(profile['mu']), 2)))
                     embed.add_field(name="Sigma", value="{}".format(round(float(profile['sigma']), 2)))
                     embed.add_field(name="Rating", value="{}".format(round(float(profile['mu']) - 3 * float(profile['sigma']), 2)))
-                    embed.add_field(name="Last Updated", value="{} UTC".format(profile['last_updated']))
+                    embed.add_field(name="Last Updated", value="{} utc".format(profile['last_updated'].strftime("%m/%d/%Y, %H:%M")))
                     if platform == 0:
                         profile = get_steam_profile(player)
                         embed.set_image(url =  profile['response']['players'][0]['avatarfull'])
