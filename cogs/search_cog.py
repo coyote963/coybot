@@ -25,7 +25,6 @@ class Search(commands.Cog):
             await ctx.send("Provide a username")
         else:
             player = get_player(self.db, query)
-            
             if player is None:
                 await ctx.send("Please check your spelling")
             else:
@@ -35,13 +34,13 @@ class Search(commands.Cog):
                 
                 profile = get_profile(self.db.dm_profiles, player)
                 if profile is not None:
-                    platform = int(player['_id']['platform'])
+                    platform = int(player['profile']['platform'])
                     if platform == 0:
                         embed = discord.Embed(
                             title = player['name'][0],
                             description = "Deathmatch Profile [{}]".format(alternate_names),
                             colour = get_hex_code(get_hex(int(player['color']))),
-                            url = "https://steamcommunity.com/profiles/{}".format(player['_id']['profile'])
+                            url = "https://steamcommunity.com/profiles/{}".format(player['profile']['profile'])
                         )
                     else:
                         embed = discord.Embed(
@@ -82,13 +81,13 @@ class Search(commands.Cog):
                 
                 profile = get_profile(self.db.ctf_profiles, player)
                 if profile is not None:
-                    platform = int(player['_id']['platform'])
+                    platform = int(player['profile']['platform'])
                     if platform == 0:
                         embed = discord.Embed(
                             title = player['name'][0],
                             description = "Capture the Flag Profile [{}]".format(alternate_names),
                             colour = get_hex_code(get_hex(int(player['color']))),
-                            url = "https://steamcommunity.com/profiles/{}".format(player['_id']['profile'])
+                            url = "https://steamcommunity.com/profiles/{}".format(player['profile']['profile'])
                         )
                     else:
                         embed = discord.Embed(
@@ -127,13 +126,13 @@ class Search(commands.Cog):
                 
                 profile = get_profile(self.db.tdm_profiles, player)
                 if profile is not None:
-                    platform = int(player['_id']['platform'])
+                    platform = int(player['profile']['platform'])
                     if platform == 0:
                         embed = discord.Embed(
                             title = player['name'][0],
                             description = "Team Deathmatch Profile [{}]".format(alternate_names),
                             colour = get_hex_code(get_hex(int(player['color']))),
-                            url = "https://steamcommunity.com/profiles/{}".format(player['_id']['profile'])
+                            url = "https://steamcommunity.com/profiles/{}".format(player['profile']['profile'])
                         )
                     else:
                         embed = discord.Embed(
@@ -170,13 +169,15 @@ class Search(commands.Cog):
                     alternate_names + player['name'][i]
                 if alternate_names == "":
                     alternate_names = "None"
-                platform = int(player['_id']['platform'])
+                platform = int(player['profile']['platform'])
+                print(platform)
                 if platform == 0:
+                    print("HERE")
                     embed = discord.Embed(
                         title = player['name'][0],
                         description = "aliases : " + alternate_names,
                         colour = get_hex_code(get_hex(int(player['color']))),
-                        url = "https://steamcommunity.com/profiles/{}".format(player['_id']['profile'])
+                        url = "https://steamcommunity.com/profiles/{}".format(player['profile']['profile'])
                     )
                 else:
                     embed = discord.Embed(
@@ -186,12 +187,12 @@ class Search(commands.Cog):
                     )
                 if platform == 0:
                     profile = get_steam_profile(player)
-                    embed.set_image(url =  profile['response']['players'][0]['avatarfull'])
+                    embed.set_image(url =  profile['response']['players'][0]['avatar'])
                     embed.add_field(name = "Steam Status", value = steam_status[int(profile['response']['players'][0]['personastate'])], inline=False)
                 if 'premium' in player:
                     embed.add_field(name="Account", value = premium[int(player['premium'])])
                 embed.add_field(name="Hat", value=hats[int(player['hat'])])
-                embed.add_field(name="Platform", value = store[int(player['_id']['platform'])])
+                embed.add_field(name="Platform", value = store[int(player['profile']['platform'])])
                 embed.add_field(name="Color", value = get_color_name(*get_hex(int(player['color']))))
                 tdm = emoji.emojize(':crossed_swords:')
                 dm = emoji.emojize(':skull:')

@@ -14,7 +14,7 @@ def get_hex_code(color_tuple):
 def get_color_name(r,g,b):
     response = requests.get("https://www.thecolorapi.com/id?rgb=rgb({},{},{})".format(r, g, b))
     if (r, g, b) == (255, 0, 255):
-        return "M a g en t a"
+        return "M a g e n t a"
     return response.json()['name']['value']
 
 def get_player(db, query):
@@ -24,13 +24,14 @@ def get_player(db, query):
         return player
 
 def get_steam_profile(player):
-    if player['_id']['platform'] == '0':
-        steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}".format(steam_key,player['_id']['profile'])
+    if player['profile']['platform'] == '0':
+        steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}".format(steam_key,player['profile']['profile'])
         response = requests.get(steam_url)
         return response.json()
 
 
 def get_profile(collection, player):
+    print(player)
     return collection.find_one(
         {'player' : player['_id']}
     )
