@@ -1,5 +1,5 @@
 from tabulate import tabulate
-
+from datetime import datetime, timedelta
 
 def round_floats(results):
     for result in results:
@@ -32,6 +32,12 @@ def ctf_rankings(db):
                 'localField': 'player', 
                 'foreignField': '_id', 
                 'as': 'newplayer'
+            }
+        }, {
+            '$match': {
+                'last_updated': {
+                    '$gt': datetime.now() - timedelta(days = 14)
+                }
             }
         }, {
             '$project': {
@@ -79,55 +85,63 @@ def ctf_rankings(db):
 
 
 def dm_rankings(db):
-    pipeline = [{
-        '$lookup': {
-            'from': 'players', 
-            'localField': 'player', 
-            'foreignField': '_id', 
-            'as': 'newplayer'
-        }
-    }, {
-        '$project': {
-            'player.platform': 1, 
-            'mu': 1, 
-            'sigma': 1, 
-            'first': {
-                '$arrayElemAt': [
-                    '$newplayer', 0
-                ]
+    pipeline = [
+        {
+            '$match': {
+                'sigma': {
+                    '$lt': 1
+                }
+            }
+        }, {
+            '$match': {
+                'last_updated': {
+                    '$gt': datetime.now() - timedelta(days = 14)
+                }
+            }
+        }, {
+            '$lookup': {
+                'from': 'players', 
+                'localField': 'player', 
+                'foreignField': '_id', 
+                'as': 'newplayer'
+            }
+        }, {
+            '$project': {
+                'player.platform': 1, 
+                'mu': 1, 
+                'sigma': 1, 
+                'first': {
+                    '$arrayElemAt': [
+                        '$newplayer', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                '_id': 0, 
+                'mu': 1, 
+                'sigma': 1, 
+                'result': {
+                    '$subtract': [
+                        '$mu', {
+                            '$multiply': [
+                                3, '$sigma'
+                            ]
+                        }
+                    ]
+                }, 
+                'name': {
+                    '$arrayElemAt': [
+                        '$first.name', 0
+                    ]
+                }
+            }
+        }, {
+            '$sort': {
+                'result': -1
             }
         }
-    }, {
-        '$project': {
-            '_id': 0, 
-            'mu': 1, 
-            'sigma': 1, 
-            'result': {
-                '$subtract': [
-                    '$mu', {
-                        '$multiply': [
-                            3, '$sigma'
-                        ]
-                    }
-                ]
-            }, 
-            'name': {
-                '$arrayElemAt': [
-                    '$first.name', 0
-                ]
-            }
-        }
-    }, {
-        '$sort': {
-            'result': -1
-        }
-    }, {
-        '$match': {
-            'sigma': {
-                '$lt': 1
-            }
-        }
-    }]
+    ]
     result = list(db.dm_profiles.aggregate(pipeline))[:20]
     for i in range(0, len(result)):
         result[i]['rank'] = i+1
@@ -143,6 +157,12 @@ def tdm_rankings(db):
                 'localField': 'player', 
                 'foreignField': '_id', 
                 'as': 'newplayer'
+            }
+        }, {
+            '$match': {
+                'last_updated': {
+                    '$gt': datetime.now() - timedelta(days = 14)
+                }
             }
         }, {
             '$project': {
