@@ -14,8 +14,9 @@ class Search(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        print("here")
         self.db = MongoClient(uri).bmdb
-
+        print("now here")
 
 
     @commands.command()
