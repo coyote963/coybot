@@ -31,7 +31,6 @@ def get_steam_profile(player):
 
 
 def get_profile(collection, player):
-    print(player)
     return collection.find_one(
         {'player' : player['_id']}
     )
