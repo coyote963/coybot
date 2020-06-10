@@ -13,7 +13,8 @@ def get_standings(db : collection.Collection, page : int):
             '$project': {
                 '_id': -1, 
                 'name': 1,  
-                'elo': 1
+                'elo': 1,
+                'clan_tag' : 1
             }
         }, {
             '$sort': {
@@ -27,4 +28,6 @@ def get_standings(db : collection.Collection, page : int):
     ]))
     for p in players:
         del p['_id']
+        if p['clan_tag'] == "unknown":
+            p['clan_tag'] = "No clan"
     return players
