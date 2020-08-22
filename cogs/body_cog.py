@@ -54,7 +54,7 @@ class Body(commands.Cog):
             '61580',
             '232389371'
         ]
-        response = requests.request("GET", "https://rest.bman.gg/chat/random")
+        response = requests.request("GET", "https://api.dyson.city/chat/random")
         message0 = json.loads(response.text)[0]['message']
         message1 = json.loads(response.text)[1]['message']
         url = "https://api.imgflip.com/caption_image"
