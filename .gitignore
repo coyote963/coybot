@@ -27,6 +27,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-
+tutorial-env/
 # Our configuration files
 config.py
